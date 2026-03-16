@@ -26,7 +26,14 @@ make
 ./parjson path/to/input.json
 ./parjson path/to/input.json output.txt
 ./parjson path/to/input.json output.txt 65536
+./parjson path/to/input.json output.txt 65536 4
 ```
+
+The optional arguments are positional:
+
+- `output.txt`
+- `chunk_size`
+- `num_threads`
 
 You can also try the included sample:
 

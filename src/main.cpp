@@ -141,7 +141,7 @@ std::vector<unsigned char> build_mask(const std::string &data, std::size_t chunk
 
 void print_usage(const char *program_name) {
   std::cerr << "Usage: " << program_name
-            << " <input.json> [output.txt] [chunk_size]\n"
+            << " <input.json> [output.txt] [chunk_size] [num_threads]\n"
             << "Produces a 0/1 mask where positions inside JSON strings are 1.\n";
 }
 
@@ -149,7 +149,7 @@ void print_usage(const char *program_name) {
 
 int main(int argc, char **argv) {
   try {
-    if (argc < 2 || argc > 4) {
+    if (argc < 2 || argc > 5) {
       print_usage(argv[0]);
       return 1;
     }
@@ -157,6 +157,22 @@ int main(int argc, char **argv) {
     const std::string input_path = argv[1];
     const std::string output_path = argc >= 3 ? argv[2] : "";
     const std::size_t chunk_size = argc >= 4 ? std::stoull(argv[3]) : 1 << 14;
+    const int num_threads = argc >= 5 ? std::stoi(argv[4]) : 0;
+
+    if (argc >= 5 && num_threads <= 0) {
+      throw std::runtime_error("Number of threads must be greater than zero.");
+    }
+
+#ifdef _OPENMP
+    if (num_threads > 0) {
+      omp_set_num_threads(num_threads);
+    }
+#else
+    if (num_threads > 0) {
+      std::cerr << "Warning: num_threads was provided, but this build does not include OpenMP "
+                   "support.\n";
+    }
+#endif
 
     const std::string data = read_file(input_path);
     const auto mask = build_mask(data, chunk_size);
