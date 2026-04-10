@@ -1,20 +1,11 @@
-CXX := clang++
+CXX := g++
 CXXFLAGS := -std=c++17 -O3 -Wall -Wextra -pedantic
 LDFLAGS :=
 TARGET := parjson
-SRC := src/main.cpp
-UNAME_S := $(shell uname -s)
-OMP_PREFIX := $(shell brew --prefix libomp 2>/dev/null)
+SRC := src/main.cpp src/parjson.cpp src/algo.cpp
 
-ifeq ($(UNAME_S),Darwin)
-ifneq ($(OMP_PREFIX),)
-CXXFLAGS += -Xpreprocessor -fopenmp -I$(OMP_PREFIX)/include
-LDFLAGS += -L$(OMP_PREFIX)/lib -lomp
-endif
-else
 CXXFLAGS += -fopenmp
 LDFLAGS += -fopenmp
-endif
 
 .PHONY: all clean run summary index benchmark benchmark-size benchmark-size-big graphs generate-benchmark-input verify
 
